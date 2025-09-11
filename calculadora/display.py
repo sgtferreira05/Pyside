@@ -2,12 +2,15 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeyEvent
 from PySide6.QtWidgets import QLineEdit
 from variables import BIG_FONT_SIZE, TEXT_MARGIN, MINIMUN_WIDTH
-from utils import isEmpty
+from utils import isEmpty, isNumOrDot
 
 class Display(QLineEdit):
     eqRequested = Signal()
     delPressed = Signal()
     clearPressed = Signal()
+    inputPressed = Signal(str)
+    operatorPressed = Signal(str)
+
 
 
     def __init__(self, *args, **kwargs):
@@ -30,25 +33,34 @@ class Display(QLineEdit):
         isEnter = key in [KEYS.Key_Enter, KEYS.Key_Return, KEYS.Key_Equal]
         isDelete = key in [KEYS.Key_Backspace, KEYS.Key_Delete, KEYS.Key_D]
         isEsc = key in [KEYS.Key_Escape, KEYS.Key_C]
+        isOperator = key in [KEYS.Key_Plus, KEYS.Key_Minus, KEYS.Key_Slash, KEYS.Key_Asterisk,
+                             KEYS.Key_P]
+
 
 
         if isEnter:
-            print('EQ pressed, signal on ', type(self).__name__)
             self.eqRequested.emit()
             return event.ignore()
         
         if isDelete:
-            print('isDelete pressed, signal on ', type(self).__name__)
             self.delPressed.emit()
             return event.ignore()
         
         if isEsc:
-            print('Enter pressed, signal on ', type(self).__name__)
             self.clearPressed.emit()
             return event.ignore()
-    
+        
+        if isOperator:
+            if text.lower() == 'p':
+                text = '^'
+            self.operatorPressed.emit(text)
+            return event.ignore()
+        
+
         # Não passar daqui se não tiver texto
         if isEmpty(text):
             return event.ignore()
-        
-        print('Texto', text)
+
+        if isNumOrDot(text):
+            self.inputPressed.emit(text)
+            return event.ignore()
