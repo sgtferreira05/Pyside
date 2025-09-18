@@ -1,7 +1,7 @@
 import sys
 import time
 
-from PySide6.QtCore import QObject, Signal, Slot, QThread
+from PySide6.QtCore import QObject, Signal, QThread
 from PySide6.QtWidgets import QApplication, QWidget
 from ui_workerui import Ui_myWidget
 
